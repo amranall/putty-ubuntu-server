@@ -1,0 +1,129 @@
+Step 1: Ensure Ollama is Running
+Make sure your Ollama server is running and accessible. You should have started the server with the following command:
+bash
+OLLAMA_HOST=0.0.0.0:11434 ollama serve
+
+This command binds the Ollama server to all network interfaces, allowing external access.
+Step 2: Configure Firewall Rules
+Ensure that your firewall allows traffic on port 11434. If you are using ufw (Uncomplicated Firewall), you can allow access with the following command:
+bash
+sudo ufw allow 11434/tcp
+
+Check the status of your firewall to confirm the rule is applied:
+bash
+sudo ufw status
+
+Step 3: Install and Configure Nginx
+If you haven't already installed Nginx, do so with:
+bash
+sudo apt update
+sudo apt install nginx -y
+
+Create Nginx Configuration
+Create a new configuration file for Nginx:
+bash
+sudo nano /etc/nginx/sites-available/ollama.conf
+
+Add the following configuration, replacing 39.50.40.30 with your VPS IP address:
+text
+server {
+    listen 80;
+    server_name 39.50.40.30;  # Your VPS IP or domain name
+
+    location / {
+        proxy_pass http://localhost:11434;  # Forward requests to Ollama server
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+
+Enable the Configuration
+Link the configuration file to enable it:
+bash
+sudo ln -s /etc/nginx/sites-available/ollama.conf /etc/nginx/sites-enabled/
+
+sudo ufw allow 'Nginx Full'
+
+Test and Restart Nginx
+Test the Nginx configuration for syntax errors:
+bash
+sudo nginx -t
+
+If there are no errors, restart Nginx:
+bash
+sudo systemctl restart nginx
+
+Step 4: Accessing the API Externally
+Now that you have set up Nginx as a reverse proxy, you can access your Ollama API externally using your VPS IP address:
+For chat requests, use:
+text
+http://39.50.40.30/api/chat
+
+Example API Call
+You can test the API using curl from another machine or using Postman:
+bash
+curl -X POST http://39.50.40.30/api/chat -H "Content-Type: application/json" -d '{
+    "model": "llama3.2",
+    "messages": [{"role": "user", "content": "Hello!"}],
+    "stream": false
+}'
+
+(Optional) Set Up HTTPS
+For production environments, it’s highly recommended to secure your application with HTTPS. You can use Certbot with Let's Encrypt to obtain a free SSL certificate.
+Here’s a quick way to do that:
+Install Certbot:
+bash
+sudo apt install certbot python3-certbot-nginx
+
+Obtain and Install the Certificate:
+bash
+sudo certbot --nginx -d your_domain_or_ip
+
+Follow the prompts to configure SSL.
+Test Automatic Renewal:
+bash
+sudo certbot renew --dry-run
+
+Step 5: Monitor Performance
+To handle around 10,000 concurrent requests effectively, monitor system performance and adjust configurations as needed. Use tools like htop or netstat to keep an eye on resource usag
+
+1.
+Install htop
+To install htop, run:
+bash
+sudo apt update
+sudo apt install htop -y
+
+Install netstat
+netstat is part of the net-tools package. To install it, run:
+bash
+sudo apt install net-tools -y
+
+ Using htop
+After installation, you can start htop by simply typing:
+bash
+htop
+
+2.Using netstat
+To view active network connections, run:
+bash
+sudo netstat -tunlp
+
+
+Common Commands:
+List All Connections:
+bash
+netstat -a
+
+Show Listening Ports Only:
+bash
+netstat -l
+
+Filter by Protocol (TCP):
+bash
+netstat -at

@@ -1,0 +1,66 @@
+give port different sevice/project
+
+#Fast api
+nano embedding_model
+sudo ufw allow 8000/tcp
+run - uvicorn embedding_model:app --host 0.0.0.0 --port 8000 --reload  
+
+#searxng
+
+sudo apt update
+
+git clone https://github.com/searxng/searxng.git
+cd searxng
+pip install -r requirements.txt
+nano searx/settings.yml  -updata like bind,other as need
+python searx/webapp.py
+if sear import problem came - export PYTHONPATH=$PYTHONPATH:$(pwd)
+
+if .toml then:
+cmd - sudo mkdir -p /etc/searxng
+sudo nano /etc/searxng/limiter.toml
+
+and in limiter.toml modify these:
+
+[rate_limit]
+requests = 100  # Number of allowed requests
+period = 60  # Time window in seconds
+
+python searx/webapp.py
+
+sudo ufw allow 8888/tcp
+
+
+o make your SearXNG instance accessible via a domain name or to enable HTTPS, consider setting up Nginx as a reverse proxy:
+Install Nginx:
+bash
+sudo apt install nginx
+
+Create an Nginx Configuration File:
+bash
+sudo nano /etc/nginx/sites-available/searxng.conf
+
+Add Configuration:
+text
+server {
+    listen 80;
+    server_name your_domain_or_IP;  # Change this to your domain or IP address
+
+    location / {
+        proxy_pass http://127.0.0.1:8888;  # Adjust if using a different port.
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+
+Enable Site and Restart Nginx:
+bash
+sudo ln -s /etc/nginx/sites-available/searxng.conf /etc/nginx/sites-enabled/
+sudo systemctl restart nginx
+
+Optional: Set Up SSL with Certbot (for HTTPS):
+bash
+sudo apt install certbot python3-certbot-nginx
+sudo certbot --nginx -d your_domain.com  # Replace with your domain name.

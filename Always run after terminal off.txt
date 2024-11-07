@@ -1,0 +1,69 @@
+Always run after terminal off
+
+sudo nano /etc/systemd/system/ollama.service
+
+then add/edit:
+
+[Unit]
+Description=Ollama Service
+After=network-online.target
+
+[Service]
+ExecStart=/usr/local/bin/ollama serve
+User=hexazn  
+Group=ollama  
+Restart=always
+RestartSec=3
+Environment="OLLAMA_HOST=0.0.0.0:11434"
+Environment="PATH=/home/hexazn/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"
+
+[Install]
+WantedBy=default.target
+
+
+reload Systemd:
+After modifying the service file, reload systemd to apply the changes:
+bash
+sudo systemctl daemon-reload
+
+Enable and Start the Service:
+If you haven't already enabled it, do so now:
+bash
+sudo systemctl enable ollama.service
+
+Then start the service:
+bash
+sudo systemctl start ollama.service
+
+Check the Status of the Service:
+Confirm that the service is running correctly:
+bash
+sudo systemctl status ollama.service
+
+
+
+if port run type error 
+
+The error message you received indicates that the Ollama service is trying to bind to port 11434, but it is already in use by another instance of the Ollama process. Specifically, the output from lsof -i :11434 shows that the command ollama is already listening on that port.
+Steps to Resolve the Issue
+Stop the Existing Ollama Process:
+Since the port is already in use, you need to stop the existing Ollama process. You can do this with the following command:
+bash
+sudo kill 12647
+
+Replace 12647 with the actual PID (Process ID) shown in your lsof output.
+Verify the Port is Free:
+After stopping the process, check if the port is free:
+bash
+sudo lsof -i :11434
+
+If there are no results, it means the port is now free.
+Restart the Ollama Service:
+Now that the port is available, you can restart the Ollama service:
+bash
+sudo systemctl restart ollama.service
+
+Check Service Status:
+Verify that the service is running correctly:
+bash
+sudo systemctl status ollama.service

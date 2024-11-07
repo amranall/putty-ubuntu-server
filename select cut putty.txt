@@ -1,0 +1,14 @@
+Move to Start: Alt + \
+Set Mark: Ctrl + 6
+Move to End: Alt + /
+Cut Selected Text: Ctrl + K
+
+Paste Text: Ctrl + U
+
+Press CTRL + O to save the changes.
+Press Enter to confirm the file name.
+Press CTRL + X to exit nano.
+
+
+
+

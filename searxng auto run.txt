@@ -1,0 +1,31 @@
+sudo nano /etc/systemd/system/searxng.service
+
+[Unit]
+Description=SearXNG Metasearch Engine
+After=network-online.target
+
+[Service]
+ExecStart=/usr/bin/python3 /home/hexazn/searxng/searx/webapp.py
+User=hexazn
+Group=hexazn
+Restart=always
+RestartSec=3
+Environment="SEARXNG_SETTINGS_PATH=/home/hexazn/searxng/searx/settings.yml"
+Environment="PYTHONPATH=/home/hexazn/searxng"
+
+[Install]
+WantedBy=multi-user.target
+
+
+next:
+bash
+sudo systemctl daemon-reload
+Start the Service: Start the SearXNG service:
+
+bash
+sudo systemctl start searxng.service
+Check the Status: Check the status of the service to ensure it’s running correctly:
+
+bash
+Copy code
+sudo systemctl status searxng.service

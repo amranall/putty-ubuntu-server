@@ -1,0 +1,141 @@
+xaamp putty vps install and config:
+
+wget "https://altushost-swe.dl.sourceforge.net/project/xampp/XAMPP%20Linux/8.2.12/xampp-linux-x64-8.2.12-0-installer.run?viasf=1"
+
+1. Rename the XAMPP Installer File
+Rename the installer to remove the ?viasf=1 from its name:
+
+mv 'xampp-linux-x64-8.2.12-0-installer.run?viasf=1' xampp-linux-x64-8.2.12-0-installer.run
+
+2. Make the Installer Executable
+After renaming the file, make it executable:
+
+chmod +x xampp-linux-x64-8.2.12-0-installer.run
+
+3. Run the Installer
+Now, you can run the installer:
+
+sudo ./xampp-linux-x64-8.2.12-0-installer.run
+
+Follow the instructions in the terminal to complete the installation.
+
+4. Start XAMPP
+Once installed, start XAMPP:
+
+sudo /opt/lampp/lampp start
+
+
+5. Configure XAMPP to Run After Closing the Session
+To ensure that XAMPP runs even after you close your VPS session, you can create a systemd service that automatically starts XAMPP on boot.
+
+5.1 Create a XAMPP Systemd Service
+Create a systemd service file for XAMPP:
+
+sudo nano /etc/systemd/system/xampp.service
+
+And Add the following content to the file:
+
+
+[Unit]
+Description=XAMPP
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=/opt/lampp/lampp start
+ExecStop=/opt/lampp/lampp stop
+ExecReload=/opt/lampp/lampp reload
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target
+
+5.2 Enable the XAMPP Service on Boot
+Enable the XAMPP service to start automatically on boot:
+
+sudo systemctl daemon-reload
+sudo systemctl enable xampp.service
+5.3 Start the XAMPP Service
+Start the XAMPP service immediately:
+
+
+sudo systemctl start xampp.service
+
+6. Check XAMPP Status
+Verify the status of the XAMPP service to ensure it’s running:
+
+sudo systemctl status xampp.service
+
+
+Open the XAMPP configuration file for editing different All system :
+
+sudo nano /opt/lampp/etc/extra/httpd-xampp.conf
+
+
+add/edit:
+ 
+only Local:
+
+<Directory "/opt/lampp/phpmyadmin">
+    AllowOverride AuthConfig Limit
+    Require local
+    ErrorDocument 403 /error/XAMPP_FORBIDDEN.html.var
+</Directory>
+
+or specific id:
+
+<Directory "/opt/lampp/phpmyadmin">
+    AllowOverride AuthConfig Limit
+    Require ip 36.50.40.36
+    ErrorDocument 403 /error/XAMPP_FORBIDDEN.html.var
+</Directory>
+
+
+or all:
+
+<Directory "/opt/lampp/phpmyadmin">
+    AllowOverride AuthConfig Limit
+    Require all granted
+    ErrorDocument 403 /error/XAMPP_FORBIDDEN.html.var
+</Directory>
+
+
+restart:
+
+sudo /opt/lampp/lampp restart
+
+
+password protection:
+
+1.Create a password file using htpasswd:
+
+sudo htpasswd -c /opt/lampp/phpmyadmin/.htpasswd your_username
+
+You’ll be prompted to enter a password for the user.
+
+2.Edit the httpd-xampp.conf file to enforce authentication:
+
+sudo nano /opt/lampp/etc/extra/httpd-xampp.conf
+
+3.Add these lines within the <Directory "/opt/lampp/phpmyadmin"> block to enable password protection:
+
+
+AuthType Basic
+AuthName "Restricted Access"
+AuthUserFile /opt/lampp/phpmyadmin/.htpasswd
+Require valid-user
+
+Save and exit, then restart Apache again:
+
+
+sudo /opt/lampp/lampp restart
+
+
+
+
+
+
+
+
+local ip-192.168.0.132

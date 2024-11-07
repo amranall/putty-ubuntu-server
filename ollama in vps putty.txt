@@ -1,0 +1,26 @@
+1.cmd: sudo apt update && sudo apt upgrade -y
+
+2.Run the following command to install Ollama:
+bash
+curl -fsSL https://ollama.com/install.sh | sh
+
+3. Pull the Desired Model
+After installation, you need to pull the model you want to use. For example, if you want to use the Llama 3.2 model, execute:
+bash
+ollama pull llama3.2
+
+4. Configure Ollama to Run as a Server
+To allow external access and handle multiple requests, you need to set up Ollama to run as a server. First, stop any running instances of Ollama:
+bash
+service ollama stop
+
+Then, set the environment variable and start the server:
+bash
+OLLAMA_HOST=0.0.0.0:11434 ollama serve
+
+
+curl http://36.50.40.36:11434/api/chat -d '{
+  "model": "llama3.2",
+  "messages": [{ "role": "user", "content": "Hello" }],
+  "stream": false
+}'

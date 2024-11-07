@@ -1,0 +1,37 @@
+36.50.40.36
+user: hexazn 
+pass: 112233@@##$$
+
+
+ip: http://36.50.40.36:11434/
+
+
+https://103-169-160-201.cprapid.com:2083/
+techknowgram
+Q88IXHR&#o
+
+
+https://103-169-160-201.cprapid.com:2087/
+root
+BDJP@123q
+
+
+
+
+curl http://36.50.40.36:11434/api/chat -d '{
+  "model": "llama3.2",
+  "messages": [{ "role": "user", "content": "Hello" }],
+  "stream": false
+}'
+
+
+
+hexazn@hexazn:~$ OLLAMA_HOST=0.0.0.0:11434 ollama serve
+Couldn't find '/home/hexazn/.ollama/id_ed25519'. Generating new private key.
+Your new public key is:
+
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIED1ZoArjG5TLcWEDHJof+PkkAvEDJ9ORX1Mee5fYpuo
+
+
+
+ollama pull nomic-embed-text
