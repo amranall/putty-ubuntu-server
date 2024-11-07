@@ -1,0 +1,11 @@
+#live logs:
+sudo journalctl -u api_platform.service -f
+#my service list:
+cd /etc/systemd/system
+
+#update 
+/home/hexazn/api_platform/update_service.sh
+
+
+
+
